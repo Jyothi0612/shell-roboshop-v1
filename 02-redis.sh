@@ -24,6 +24,7 @@ validate() {
         echo -e "$(timestamp) [ERROR] ${2}..${R}Failed${N}" | tee -a $logs_file
     else
         echo -e "$(timestamp) [INFO] ${2}..${G}Success${N}" | tee -a $logs_file
+    fi
 }
 
 echo "$(timestamp) [INFO] ==== Script started execution ====" | tee -a $logs_file
