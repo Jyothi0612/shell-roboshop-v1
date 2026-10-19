@@ -1,7 +1,5 @@
 #!/bin/bash
 
-domain_name="agenticengg.online" this in if you want to delete the records
-
 for instance in $@
 do
     instance_name="roboshop-$instance"
