@@ -41,5 +41,5 @@ systemctl enable redis &>> $logs_file
 systemctl start redis
 validate $? "Enable and start Redis service"
 
-echo "$(timestamp) [INFO] Script completed in $SECONDS"
+echo "$(timestamp) [INFO] Script completed in $SECONDS seconds"
 echo "$(timestamp) [INFO] ==== Script completed execution ====" | tee -a $logs_file
