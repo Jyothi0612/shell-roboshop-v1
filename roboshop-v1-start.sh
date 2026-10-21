@@ -1,3 +1,5 @@
+#!/bin/bash
+
 for instance in $@
 do
     instance_name="roboshop-$instance"
