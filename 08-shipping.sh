@@ -35,5 +35,56 @@ dnf module enable maven:3.9 -y &>> $logs_file
 dnf install maven java-25-openjdk-devel -y &>> $logs_file
 validate $? "Install maven and Java"
 
+alternatives --set java "/usr/lib/jvm/java-25-openjdk/bin/java"
+validate $? "Setting Java 25 as default Java version"
+
+echo "export JAVA_HOME=$(dirname $(dirname $(readlink -f /usr/bin/java)))" > /etc/profile.d/java.sh
+source /etc/profile.d/java.sh
+echo $JAVA_HOME
+validate $? "Setting JAVA_HOME for maven"
+
+id roboshop &>> $logs_file
+if [ $? -ne 0 ]; then
+    useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>> $logs_file
+    validate $? "Creating system user"
+else
+    echo -e "$(timestamp) [INFO] System user roboshop already exist...${Y}SKIPPING${N}"
+fi
+
+rm -rf /app
+validate $? "Removing old code"
+
+mkdir -p /app
+validate $? "Creating app directory"
+
+curl -L -o /tmp/shipping.zip https://raw.githubusercontent.com/daws-92s/roboshop-documentation/refs/heads/main/artifacts/shipping-v4.zip &>> $logs_file
+validate $? "Downloading shipping"
+
+cd /app
+unzip /tmp/shipping.zip &>> $logs_file
+validate $? "Unzipping shipping"
+
+mvn clean package &>> $logs_file
+validate $? "Install dependencies"
+
+mv target/shipping.jar shipping.jar
+validate $? "Moving shipping.jar file"
+
+dnf install mysql -y
+validate $? "Installing MySql Client"
+
+
+
+sed -i "s/DOMAIN_NAME/$domain_name/g" "$scripts_dir/shipping.service"
+cp "$scripts_dir/shipping.service" /etc/systemd/system/shipping.service
+
+systemctl daemon-reload &>> $logs_file
+systemctl enable shipping &>> $logs_file
+systemctl start shipping &>> $logs_file
+validate $? "$(timestamp) [INFO] Enable and start shipping service"
+
+systemctl restart shipping
+validate $? "Restarting shipping"
+
 echo "$(timestamp) [INFO] Script completed in $SECONDS seconds"
 echo "$(timestamp) [INFO] ==== Script completed execution ====" | tee -a $logs_file
