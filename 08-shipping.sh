@@ -73,7 +73,8 @@ validate $? "Moving shipping.jar file"
 dnf install mysql -y
 validate $? "Installing MySql Client"
 
-
+mysql -h "mysql.$domain_name" -uroot -pRoboShop@1 < /app/db/master-data.sql
+validate $? "Loading shipping data"
 
 sed -i "s/DOMAIN_NAME/$domain_name/g" "$scripts_dir/shipping.service"
 cp "$scripts_dir/shipping.service" /etc/systemd/system/shipping.service
