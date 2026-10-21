@@ -81,7 +81,7 @@ if [ "$product_count" -eq 0 ]; then
     mongosh --host "mongodb.$domain_name" </app/db/master-data.js &>> $logs_file
     validate $? "Loading Products"
 else
-    echo "$(timestamp) [INFO] Prodcuts are already loaded...${Y}SKIPPING${N}"
+    echo -e "$(timestamp) [INFO] Prodcuts are already loaded...${Y}SKIPPING${N}"
 fi
 
 systemctl restart catalogue
